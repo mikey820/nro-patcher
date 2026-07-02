@@ -2,7 +2,9 @@
 
 Browser-based tool to edit Nintendo Switch homebrew `.nro` files — change the app icon, name, author, and version. Everything runs locally; no file is ever uploaded anywhere.
 
-**[Use it here →](https://mikey820.github.io/nro-patcher/)**
+**[Use it here →](https://mikey820.github.io/nro-patcher/)**  
+
+> **Note:** The page may show a 404 for a minute or two after first deployment. GitHub Pages takes a moment to build.
 
 ## Features
 

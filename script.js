@@ -336,7 +336,10 @@ function patchNRO(orig, parsed, changes) {
   outDV.setUint32(aset.asetOff + 0x18, newNacpRelOff, true);       // nacp offset slot B (extended)
   outDV.setUint32(aset.asetOff + 0x1C, aset.nacpSize, true);       // nacp size slot B
 
-  // ── Step 5: patch NRO header (segment sizes + offsets + total size) ──
+  // ── Step 5: patch NRO header (segment sizes + offsets) ──
+  // IMPORTANT: NEVER update nro_size — it defines executable size.
+  // The ASET lives outside the segments; changing its size should
+  // only shift segments that physically come AFTER it.
   if (iconDiff !== 0) {
     const magicOff = header.magicOff;
     const segFields = [
@@ -359,9 +362,6 @@ function patchNRO(orig, parsed, changes) {
         outDV.setUint32(magicOff + sf.offField, segOff + iconDiff, true);
       }
     }
-
-    // Always update NRO total file size when icon size changes
-    outDV.setUint32(magicOff + 0x08, totalLen, true);
   }
 
   return out;
