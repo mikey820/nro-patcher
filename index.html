@@ -1,92 +1,116 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NRO Patcher — Edit Switch Homebrew Icons &amp; Metadata</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Patch Nintendo Switch homebrew NRO icons and metadata locally in your browser.">
+  <meta name="theme-color" content="#0b0d12">
+  <title>NRO Studio — Switch homebrew metadata editor</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="container">
-    <header>
-      <h1>NRO Patcher</h1>
-      <p class="subtitle">Upload a Switch homebrew <code>.nro</code>, change its icon, name, author &amp; version, then download the patched file.</p>
+  <div class="noise" aria-hidden="true"></div>
+  <main class="shell">
+    <header class="hero">
+      <a class="brand" href="./" aria-label="NRO Studio home">
+        <span class="brand-mark"><i></i><i></i></span>
+        <span>NRO STUDIO</span>
+      </a>
+      <div class="privacy-pill"><span></span> 100% local processing</div>
+      <p class="eyebrow">Switch homebrew utility</p>
+      <h1>Make your homebrew<br><em>feel like yours.</em></h1>
+      <p class="lede">Change the icon and display metadata inside a Nintendo Switch <code>.nro</code>. Your file stays on your device.</p>
     </header>
 
-    <!-- STEP 1: Upload -->
-    <section id="upload-section" class="card">
-      <h2>Step 1 — Load NRO</h2>
-      <div id="drop-zone">
-        <div class="drop-icon">+</div>
-        <p>Drop an <code>.nro</code> file here</p>
-        <p class="or">or</p>
-        <label class="btn btn-outline" for="file-input">Browse files</label>
-        <input type="file" id="file-input" hidden>
+    <section class="workspace" aria-label="NRO patcher">
+      <div class="step-rail" aria-hidden="true">
+        <div class="rail-step active" data-rail="1"><b>01</b><span>Import</span></div>
+        <div class="rail-line"></div>
+        <div class="rail-step" data-rail="2"><b>02</b><span>Customize</span></div>
+        <div class="rail-line"></div>
+        <div class="rail-step" data-rail="3"><b>03</b><span>Export</span></div>
       </div>
-      <div id="file-info" class="hidden">
-        <span id="file-name"></span>
-        <span id="file-size"></span>
-        <button id="btn-reset" class="btn btn-sm btn-outline">Load different file</button>
-      </div>
-      <div id="upload-error" class="error hidden"></div>
-    </section>
 
-    <!-- STEP 2: Edit -->
-    <section id="edit-section" class="card hidden">
-      <h2>Step 2 — Edit Metadata</h2>
-      <div class="edit-grid">
-        <!-- Icon -->
-        <div class="edit-icon-col">
-          <label>App Icon</label>
-          <div class="icon-preview-wrap">
-            <img id="icon-preview" alt="App icon preview" onerror="this.classList.add('broken');document.getElementById('icon-placeholder').classList.remove('hidden');" onload="this.classList.remove('broken');this.style.display='';document.getElementById('icon-placeholder').classList.add('hidden');">
-            <div id="icon-placeholder" class="icon-placeholder hidden">No icon in NRO</div>
-          </div>
-          <label class="btn btn-outline btn-sm" for="icon-input">Upload new icon</label>
-          <input type="file" id="icon-input" accept="image/png,image/jpeg,image/webp" hidden>
-          <button id="btn-reset-icon" class="btn btn-sm btn-ghost hidden">Reset to original</button>
-          <p class="hint">Any image works &mdash; we convert it to JPEG automatically.</p>
+      <section id="import-panel" class="panel">
+        <div class="panel-heading">
+          <div><span class="step-label">Step 01</span><h2>Choose an NRO</h2></div>
+          <p>Standard libnx NRO files with an embedded NACP are supported.</p>
+        </div>
+        <input id="nro-input" class="visually-hidden" type="file" accept=".nro,application/octet-stream">
+        <label id="drop-zone" class="drop-zone" for="nro-input" tabindex="0">
+          <span class="upload-glyph" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4"/></svg></span>
+          <strong>Drop your .nro here</strong>
+          <span>or click to browse</span>
+          <small>Processed privately in this tab</small>
+        </label>
+        <div id="import-error" class="notice error" role="alert" hidden></div>
+      </section>
+
+      <section id="editor-panel" class="panel" hidden>
+        <div class="panel-heading editor-heading">
+          <div><span class="step-label">Step 02</span><h2>Customize</h2></div>
+          <button id="replace-nro" class="text-button" type="button">Choose another file</button>
         </div>
 
-        <!-- Text fields -->
-        <div class="edit-fields-col">
-          <div class="field">
-            <label for="app-name">App Name</label>
-            <input type="text" id="app-name" maxlength="512" placeholder="e.g. Goldleaf">
-          </div>
-          <div class="field">
-            <label for="app-author">Author</label>
-            <input type="text" id="app-author" maxlength="256" placeholder="e.g. XorTroll">
-          </div>
-          <div class="field">
-            <label for="app-version">Version</label>
-            <input type="text" id="app-version" maxlength="16" placeholder="e.g. 1.0.0">
-          </div>
-          <div class="field-inline">
-            <input type="checkbox" id="opt-fix-nacp" checked>
-            <label for="opt-fix-nacp">Pad strings with null bytes (standard compliance)</label>
-          </div>
+        <div class="file-chip">
+          <span class="file-icon">NRO</span>
+          <span><strong id="file-name"></strong><small id="file-size"></small></span>
+          <span class="valid-mark">Valid file</span>
         </div>
-      </div>
-      <div id="edit-error" class="error hidden"></div>
+
+        <div class="editor-grid">
+          <div class="icon-editor">
+            <div class="field-top"><label for="icon-input">App icon</label><span>JPEG output · 256 × 256</span></div>
+            <div class="icon-frame">
+              <img id="icon-preview" alt="Current homebrew icon">
+              <div id="icon-empty" class="icon-empty" hidden>No icon</div>
+            </div>
+            <input id="icon-input" class="visually-hidden" type="file" accept="image/png,image/jpeg,image/webp,image/gif">
+            <div class="icon-actions">
+              <label class="secondary-button" for="icon-input">Replace image</label>
+              <button id="reset-icon" class="text-button" type="button" hidden>Reset</button>
+            </div>
+            <p class="microcopy">Square images work best. Transparent areas are filled with black.</p>
+          </div>
+
+          <form id="metadata-form" class="metadata" novalidate>
+            <div class="field">
+              <div class="field-top"><label for="app-name">App name</label><span id="name-count">0 / 511 bytes</span></div>
+              <input id="app-name" type="text" autocomplete="off" placeholder="My Homebrew">
+            </div>
+            <div class="field">
+              <div class="field-top"><label for="app-author">Author</label><span id="author-count">0 / 255 bytes</span></div>
+              <input id="app-author" type="text" autocomplete="off" placeholder="Your name">
+            </div>
+            <div class="field">
+              <div class="field-top"><label for="app-version">Version</label><span id="version-count">0 / 15 bytes</span></div>
+              <input id="app-version" type="text" autocomplete="off" placeholder="1.0.0">
+            </div>
+            <div id="edit-error" class="notice error" role="alert" hidden></div>
+          </form>
+        </div>
+
+        <div class="export-bar">
+          <div><span class="step-label">Step 03</span><strong>Ready to export</strong><small id="output-size"></small></div>
+          <button id="download-button" class="primary-button" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m0 0 4-4m-4 4-4-4M5 19h14"/></svg>
+            Download patched NRO
+          </button>
+        </div>
+      </section>
     </section>
 
-    <!-- STEP 3: Download -->
-    <section id="download-section" class="card hidden">
-      <h2>Step 3 — Download</h2>
-      <div class="download-row">
-        <button id="btn-download" class="btn btn-primary btn-lg">Download Patched NRO</button>
-        <div class="patch-summary" id="patch-summary"></div>
-      </div>
+    <section class="trust-row" aria-label="Privacy details">
+      <div><b>01</b><span><strong>No uploads</strong><small>Your NRO never touches a server.</small></span></div>
+      <div><b>02</b><span><strong>Nothing installed</strong><small>Runs in any modern browser.</small></span></div>
+      <div><b>03</b><span><strong>Open source</strong><small>Inspect every byte of the patcher.</small></span></div>
     </section>
 
-    <!-- Footer -->
     <footer>
-      <p>NRO Patcher — runs entirely in your browser. No file is ever uploaded anywhere.</p>
-      <p><a href="https://github.com/mikey820/nro-patcher">GitHub</a></p>
+      <span>NRO Studio</span>
+      <a href="https://github.com/mikey820/nro-patcher" rel="noopener">View source on GitHub ↗</a>
     </footer>
-  </div>
-
-  <script src="script.js"></script>
+  </main>
+  <script type="module" src="script.js"></script>
 </body>
 </html>

@@ -1,37 +1,36 @@
-# 🎮 NRO Patcher
+# NRO Studio
 
-Browser-based tool to edit Nintendo Switch homebrew `.nro` files — change the app icon, name, author, and version. Everything runs locally; no file is ever uploaded anywhere.
+A private, browser-based editor for Nintendo Switch homebrew `.nro` files. Change an app's embedded icon, name, author, and display version, then download a rebuilt NRO without uploading it to a server.
 
-**[Use it here →](https://mikey820.github.io/nro-patcher/)**  
+**Live site:** https://mikey820.github.io/nro-patcher/
 
-> **Note:** The page may show a 404 for a minute or two after first deployment. GitHub Pages takes a moment to build.
+## What it patches
 
-## Features
+- The JPEG icon in the NRO `ASET` section
+- Name and author in every populated NACP language entry
+- NACP display version
+- ASET's 64-bit icon size and shifted NACP/RomFS offsets
 
-- **Drag & drop** an `.nro` file
-- **Change the icon** — upload any image (PNG, JPEG, WebP), auto-converted to JPEG at 256×256
-- **Edit metadata** — app name, author, display version
-- **Instant download** — patched NRO rebuilt in the browser
-- **Keyboard shortcut** — `Cmd+S` / `Ctrl+S` to download
-- **Privacy-first** — all binary parsing/patching happens client-side
+The executable portion of the NRO is copied byte-for-byte and its declared size is never changed.
 
-## Hosting on GitHub Pages
+## Local development
 
-1. Push this repo to GitHub
-2. Go to **Settings → Pages**
-3. Set **Source** to `main` branch, root folder
-4. Save — your site is live at `https://<you>.github.io/nro-patcher/`
+The site has no build step or runtime dependencies:
 
-Or just open `index.html` locally — no server needed.
+```sh
+python3 -m http.server 8000
+```
 
-## How it works
+Open `http://localhost:8000`. Run the binary fixture tests on macOS with:
 
-NRO files embed an **ASET** section containing:
-- A JPEG icon (typically 256×256)
-- **NACP metadata** — the app title, author, and version string
+```sh
+/System/Library/Frameworks/JavaScriptCore.framework/Versions/A/Helpers/jsc -m tests/nro.test.mjs
+```
 
-The tool parses the binary structure, lets you edit these values, then rebuilds the file with corrected offsets and segment sizes.
+## Deployment
+
+Pushes to `main` deploy the repository through the GitHub Pages Actions workflow.
 
 ## License
 
-MIT — do whatever you want with it.
+MIT
